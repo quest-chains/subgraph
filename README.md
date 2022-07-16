@@ -1,27 +1,10 @@
-# Quest Chains Mono Repo
+# @quest-chains/subgraph
 
-## Available Scripts
+Try running some of the following tasks:
 
-In the project directory, you can run:
-
-### Dapp
-
-#### `yarn dapp:dev`
-
-#### `yarn dapp:build`
-
-#### `yarn dapp:start`
-
-### Contracts
-
-#### `yarn contracts:compile`
-
-#### `yarn contracts:test`
-
-#### `yarn contracts:deploy`
-
-### Subgraph
-
-#### `yarn subgraph:codegen`
-
-#### `yarn subgraph:build`
+```shell
+yarn auth
+yarn prepare-<network>
+yarn codegen
+yarn build
+```
