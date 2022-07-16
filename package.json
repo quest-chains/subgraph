@@ -1,7 +1,7 @@
 {
   "name": "@quest-chains/subgraph",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.32.0",
     "@graphprotocol/graph-ts": "0.27.0",
