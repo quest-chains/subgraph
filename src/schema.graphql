@@ -50,7 +50,7 @@ type QuestChain @entity {
   admins: [User!]!
   reviewers: [User!]!
   editors: [User!]!
-  createdBy: User
+  createdBy: User!
   createdAt: BigInt!
   updatedAt: BigInt!
   editedBy: User

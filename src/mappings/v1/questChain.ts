@@ -27,11 +27,11 @@ import {
   fetchMetadata,
   getQuest,
   getQuestChain,
-  getRoles,
   getUser,
   questChainCompletedByUser,
   removeFromArray,
 } from '../helpers';
+import { getRoles } from './roles';
 
 export function handleChainInit(event: QuestChainInitEvent): void {
   let questChain = getQuestChain(event.address);
@@ -173,7 +173,7 @@ export function handleUnpaused(event: UnpausedEvent): void {
   }
 }
 
-export function handleQuestCreated(event: QuestsCreatedEvent): void {
+export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     let creator = Address.fromString(questChain.createdBy);

@@ -26,11 +26,11 @@ import {
 import {
   createSearchString,
   fetchMetadata,
-  getRoles,
   getUser,
   questChainCompletedByUser,
   removeFromArray,
 } from '../helpers';
+import { getRoles } from './roles';
 
 export function handleChainCreated(event: QuestChainCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());

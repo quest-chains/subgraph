@@ -38,7 +38,7 @@ export function getQuestChain(address: Address): QuestChain {
   if (questChain == null) {
     let network = getNetwork();
 
-    let questChain = new QuestChain(address.toHexString());
+    questChain = new QuestChain(address.toHexString());
 
     questChain.address = address;
     questChain.chainId = network;
@@ -99,7 +99,7 @@ export function getQuest(address: Address, questIndex: BigInt): Quest {
     .concat(questIndex.toHexString());
   let quest = Quest.load(questId);
   if (quest == null) {
-    let quest = new Quest(questId);
+    quest = new Quest(questId);
 
     quest.questChain = address.toHexString();
     quest.questId = questIndex;
