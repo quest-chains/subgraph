@@ -3,5 +3,9 @@
   "v0": {
     "factory": "0x4c7411c29c5B12E0c479978661b5e7101Ebc3354",
     "blockNumber": "10844262"
+  },
+  "v1": {
+    "factory": "0xDB067bF39fFf1978BB2AB89151e92782f4c93e36",
+    "blockNumber": "11204572"
   }
 }

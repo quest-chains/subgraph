@@ -3,6 +3,10 @@ type Global @entity {
   factoryAddress: Bytes!
   implAddress: Bytes!
   tokenAddress: Bytes!
+  adminAddress: Bytes!
+  treasuryAddress: Bytes!
+  paymentTokenAddress: Bytes!
+  upgradeFee: BigInt!
 }
 
 type QuestChainToken @entity {
@@ -69,6 +73,7 @@ type QuestChain @entity {
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "questChain")
   token: QuestChainToken! @derivedFrom(field: "questChain")
   version: String!
+  premium: Boolean!
 }
 
 type QuestEdit @entity {
