@@ -1,4 +1,4 @@
-import { log, Address } from '@graphprotocol/graph-ts';
+import { log, Address, BigInt } from '@graphprotocol/graph-ts';
 import {
   QuestChainEdit,
   QuestChain,
@@ -47,6 +47,24 @@ export function handleChainInit(event: QuestChainInitEvent): void {
   let search = createSearchString(metadata.name, metadata.description);
   questChain.search = search;
 
+  questChain.paused = event.params.paused;
+
+  let creator = Address.fromString(questChain.createdBy);
+  for (let i = 0; i < event.params.quests.length; ++i) {
+    let details = event.params.quests[i];
+    let quest = createQuest(
+      event.address,
+      BigInt.fromI32(i),
+      details,
+      creator,
+      event,
+    );
+
+    quest.save();
+  }
+
+  questChain.questCount = event.params.quests.length;
+
   questChain.save();
 }
 
@@ -78,7 +96,6 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
 
     let details = event.params.details;
     let metadata = fetchMetadata(details);
-    questChain.paused = false;
     questChain.details = details;
     questChain.name = metadata.name;
     questChain.description = metadata.description;
