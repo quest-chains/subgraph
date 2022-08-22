@@ -24,7 +24,7 @@ export function fetchMetadata(details: string): Metadata {
   let metadata = new Metadata();
   if (hash != '') {
     let ipfsData = ipfs.cat(hash);
-    if (ipfsData !== null) {
+    if (ipfsData) {
       log.info('IPFS details from hash {}, data {}', [
         details,
         ipfsData.toString(),
