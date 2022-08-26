@@ -27,7 +27,7 @@ export function handleQuestChainImplUpdated(
     QuestChainTokenTemplate.create(tokenAddress);
   }
 
-  globalNode.implAddress = event.params.newImpl;
+  globalNode.templateAddress = event.params.newImpl;
   globalNode.save();
 }
 
@@ -50,6 +50,10 @@ export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   questChain.premium = true; // all v0 quest chains are premium by default
 
   QuestChainTemplate.create(event.params.questChain);
+
+  let globalNode = getGlobal();
+  globalNode.questChainCount = globalNode.questChainCount + 1;
+  globalNode.save();
 
   user.save();
   questChain.save();

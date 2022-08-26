@@ -2,10 +2,8 @@ import { log } from '@graphprotocol/graph-ts';
 
 import {
   QuestChainCreated as QuestChainCreatedEvent,
-  FactoryInit as FactoryInitEvent,
+  FactorySetup as FactorySetupEvent,
   AdminReplaced as AdminReplacedEvent,
-  ImplReplaced as ImplReplacedEvent,
-  TreasuryReplaced as TreasuryReplacedEvent,
   PaymentTokenReplaced as PaymentTokenReplacedEvent,
   UpgradeFeeReplaced as UpgradeFeeReplacedEvent,
   QuestChainUpgraded as QuestChainUpgradedEvent,
@@ -18,11 +16,11 @@ import {
 
 import { getUser, getGlobal, getQuestChain } from '../helpers';
 
-export function handleFactoryInit(event: FactoryInitEvent): void {
+export function handleFactorySetup(event: FactorySetupEvent): void {
   let globalNode = getGlobal();
   globalNode.factoryAddress = event.address;
   let contract = QuestChainFactory.bind(event.address);
-  globalNode.implAddress = contract.questChainImpl();
+  globalNode.templateAddress = contract.questChainTemplate();
   let tokenAddress = contract.questChainToken();
   globalNode.tokenAddress = tokenAddress;
   globalNode.adminAddress = contract.admin();
@@ -37,18 +35,6 @@ export function handleFactoryInit(event: FactoryInitEvent): void {
 export function handleAdminReplaced(event: AdminReplacedEvent): void {
   let globalNode = getGlobal();
   globalNode.adminAddress = event.params.admin;
-  globalNode.save();
-}
-
-export function handleImplReplaced(event: ImplReplacedEvent): void {
-  let globalNode = getGlobal();
-  globalNode.implAddress = event.params.impl;
-  globalNode.save();
-}
-
-export function handleTreasuryReplaced(event: TreasuryReplacedEvent): void {
-  let globalNode = getGlobal();
-  globalNode.treasuryAddress = event.params.treasury;
   globalNode.save();
 }
 
@@ -85,6 +71,10 @@ export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   questChain.premium = false;
 
   QuestChainTemplate.create(event.params.questChain);
+
+  let globalNode = getGlobal();
+  globalNode.questChainCount = globalNode.questChainCount + 1;
+  globalNode.save();
 
   user.save();
   questChain.save();
