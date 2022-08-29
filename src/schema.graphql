@@ -1,12 +1,13 @@
 type Global @entity {
   id: ID!
   factoryAddress: Bytes!
-  implAddress: Bytes!
+  templateAddress: Bytes!
   tokenAddress: Bytes!
   adminAddress: Bytes!
   treasuryAddress: Bytes!
   paymentTokenAddress: Bytes!
   upgradeFee: BigInt!
+  questChainCount: Int!
 }
 
 type QuestChainToken @entity {

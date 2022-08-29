@@ -63,16 +63,12 @@ dataSources:
         - name: QuestChainTokenV1
           file: ./src/abis/v1/QuestChainToken.json
       eventHandlers:
-        - event: FactoryInit()
-          handler: handleFactoryInit
+        - event: FactorySetup()
+          handler: handleFactorySetup
         - event: QuestChainCreated(uint256,address)
           handler: handleQuestChainCreated
         - event: AdminReplaced(address)
           handler: handleAdminReplaced
-        - event: ImplReplaced(address)
-          handler: handleImplReplaced
-        - event: TreasuryReplaced(address)
-          handler: handleTreasuryReplaced
         - event: PaymentTokenReplaced(address)
           handler: handlePaymentTokenReplaced
         - event: UpgradeFeeReplaced(uint256)
@@ -191,7 +187,7 @@ templates:
           handler: handleUnpaused
         - event: QuestsPaused(address,uint256[],bool[])
           handler: handleQuestsPaused
-        - event: QuestsCreated(address,uint256[],string[])
+        - event: QuestsCreated(address,string[])
           handler: handleQuestsCreated
         - event: QuestsEdited(address,uint256[],string[])
           handler: handleQuestsEdited

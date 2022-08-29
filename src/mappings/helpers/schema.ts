@@ -22,12 +22,13 @@ export function getGlobal(): Global {
   if (globalNode == null) {
     globalNode = new Global(network);
     globalNode.factoryAddress = ADDRESS_ZERO;
-    globalNode.implAddress = ADDRESS_ZERO;
+    globalNode.templateAddress = ADDRESS_ZERO;
     globalNode.tokenAddress = ADDRESS_ZERO;
     globalNode.adminAddress = ADDRESS_ZERO;
     globalNode.treasuryAddress = ADDRESS_ZERO;
     globalNode.paymentTokenAddress = ADDRESS_ZERO;
     globalNode.upgradeFee = BigInt.fromI32(0);
+    globalNode.questChainCount = 0;
   }
 
   return globalNode as Global;

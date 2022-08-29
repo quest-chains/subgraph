@@ -193,9 +193,10 @@ export function handleUnpaused(event: UnpausedEvent): void {
 export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
+    let questCount = questChain.questCount;
     let creator = Address.fromString(questChain.createdBy);
-    for (let i = 0; i < event.params.questIdList.length; ++i) {
-      let questIndex = event.params.questIdList[i];
+    for (let i = 0; i < event.params.detailsList.length; ++i) {
+      let questIndex = BigInt.fromI32(questCount + i);
       let details = event.params.detailsList[i];
       let quest = createQuest(
         event.address,
@@ -208,8 +209,7 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
       quest.save();
     }
 
-    let questCount = questChain.questCount;
-    questChain.questCount = questCount + event.params.questIdList.length;
+    questChain.questCount = questCount + event.params.detailsList.length;
 
     questChain.save();
   }
