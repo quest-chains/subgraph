@@ -1,5 +1,12 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
-import { User, Global, QuestChain, Quest } from '../../types/schema';
+import { ERC20 } from '../../types/QuestChainFactoryV1/ERC20';
+import {
+  User,
+  Global,
+  QuestChain,
+  Quest,
+  ERC20Token,
+} from '../../types/schema';
 import { getNetwork } from './network';
 import { ADDRESS_ZERO } from './constants';
 import { createSearchString } from './strings';
@@ -26,12 +33,32 @@ export function getGlobal(): Global {
     globalNode.tokenAddress = ADDRESS_ZERO;
     globalNode.adminAddress = ADDRESS_ZERO;
     globalNode.treasuryAddress = ADDRESS_ZERO;
-    globalNode.paymentTokenAddress = ADDRESS_ZERO;
+    let paymentToken = getERC20Token(ADDRESS_ZERO);
+    globalNode.paymentToken = paymentToken.id;
+
+    paymentToken.save();
     globalNode.upgradeFee = BigInt.fromI32(0);
     globalNode.questChainCount = 0;
   }
 
   return globalNode as Global;
+}
+
+export function getERC20Token(address: Address): ERC20Token {
+  let token = ERC20Token.load(address.toHexString());
+  if (token == null) {
+    token = new ERC20Token(address.toHexString());
+
+    let erc20 = ERC20.bind(address);
+    let nameValue = erc20.try_name();
+    let symbolValue = erc20.try_symbol();
+    let decimalsValue = erc20.try_decimals();
+
+    token.name = nameValue.reverted ? '' : nameValue.value;
+    token.symbol = symbolValue.reverted ? '' : symbolValue.value;
+    token.decimals = decimalsValue.reverted ? 0 : decimalsValue.value;
+  }
+  return token as ERC20Token;
 }
 
 export function getQuestChain(address: Address): QuestChain {

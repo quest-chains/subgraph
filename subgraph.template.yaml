@@ -62,6 +62,8 @@ dataSources:
           file: ./src/abis/v1/QuestChainFactory.json
         - name: QuestChainTokenV1
           file: ./src/abis/v1/QuestChainToken.json
+        - name: ERC20
+          file: ./src/abis/ERC20.json
       eventHandlers:
         - event: FactorySetup()
           handler: handleFactorySetup

@@ -6,8 +6,16 @@ type Global @entity {
   adminAddress: Bytes!
   treasuryAddress: Bytes!
   paymentTokenAddress: Bytes!
+  paymentToken: ERC20Token!
   upgradeFee: BigInt!
   questChainCount: Int!
+}
+
+type ERC20Token @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
 }
 
 type QuestChainToken @entity {

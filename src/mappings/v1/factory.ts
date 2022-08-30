@@ -14,7 +14,7 @@ import {
   QuestChainTokenV1 as QuestChainTokenTemplate,
 } from '../../types/templates';
 
-import { getUser, getGlobal, getQuestChain } from '../helpers';
+import { getUser, getGlobal, getQuestChain, getERC20Token } from '../helpers';
 
 export function handleFactorySetup(event: FactorySetupEvent): void {
   let globalNode = getGlobal();
@@ -25,10 +25,13 @@ export function handleFactorySetup(event: FactorySetupEvent): void {
   globalNode.tokenAddress = tokenAddress;
   globalNode.adminAddress = contract.admin();
   globalNode.treasuryAddress = contract.treasury();
-  globalNode.paymentTokenAddress = contract.paymentToken();
+  let paymentTokenAddress = contract.paymentToken();
+  let paymentToken = getERC20Token(paymentTokenAddress);
+  globalNode.paymentToken = paymentToken.id;
   globalNode.upgradeFee = contract.upgradeFee();
 
   QuestChainTokenTemplate.create(tokenAddress);
+  paymentToken.save();
   globalNode.save();
 }
 
@@ -42,7 +45,9 @@ export function handlePaymentTokenReplaced(
   event: PaymentTokenReplacedEvent,
 ): void {
   let globalNode = getGlobal();
-  globalNode.paymentTokenAddress = event.params.paymentToken;
+  let paymentTokenAddress = event.params.paymentToken;
+  let paymentToken = getERC20Token(paymentTokenAddress);
+  globalNode.paymentToken = paymentToken.id;
   globalNode.save();
 }
 
