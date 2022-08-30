@@ -5,7 +5,6 @@ type Global @entity {
   tokenAddress: Bytes!
   adminAddress: Bytes!
   treasuryAddress: Bytes!
-  paymentTokenAddress: Bytes!
   paymentToken: ERC20Token!
   upgradeFee: BigInt!
   questChainCount: Int!
