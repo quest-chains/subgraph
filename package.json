@@ -15,7 +15,7 @@
     "build": "graph build",
     "clean": "rm -rf src/types build",
     "codegen": "yarn clean && graph codegen --output-dir src/types/",
-    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{json,yml,yaml,md,ts}\"",
+    "format": "prettier --write \"{*,**/*}.{json,yml,yaml,md,ts}\"",
     "create-local": "graph create --node http://localhost:8020/ test/quest-chains",
     "remove-local": "graph remove --node http://localhost:8020/ test/quest-chains",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 test/quest-chains",

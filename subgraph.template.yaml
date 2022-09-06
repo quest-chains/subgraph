@@ -8,12 +8,10 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: QuestChainFactoryV0
-    # prettier-ignore
     network: {{network}}
     source:
       address: '{{v0.factory}}'
       abi: QuestChainFactoryV0
-      # prettier-ignore
       startBlock: {{v0.blockNumber}}
     mapping:
       kind: ethereum/events
@@ -39,15 +37,14 @@ dataSources:
         - event: QuestChainCreated(indexed uint256,address)
           handler: handleQuestChainCreated
       file: ./src/mappings/v0/factory.ts
+  {{#v1}}
   - kind: ethereum/contract
-    name: QuestChainFactoryV1
-    # prettier-ignore
+    name: QuestChainFactoryV1{{version}}
     network: {{network}}
     source:
-      address: '{{v1.factory}}'
+      address: '{{factory}}'
       abi: QuestChainFactoryV1
-      # prettier-ignore
-      startBlock: {{v1.blockNumber}}
+      startBlock: {{blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -80,10 +77,10 @@ dataSources:
         - event: QuestChainUpgraded(address,address)
           handler: handleQuestChainUpgraded
       file: ./src/mappings/v1/factory.ts
+  {{/v1}}
 templates:
   - kind: ethereum/contract
     name: QuestChainV0
-    # prettier-ignore
     network: {{network}}
     source:
       abi: QuestChainV0
@@ -131,7 +128,6 @@ templates:
       file: ./src/mappings/v0/questChain.ts
   - kind: ethereum/contract
     name: QuestChainTokenV0
-    # prettier-ignore
     network: {{network}}
     source:
       abi: QuestChainTokenV0
@@ -156,7 +152,6 @@ templates:
           handler: handleURIUpdated
   - kind: ethereum/contract
     name: QuestChainV1
-    # prettier-ignore
     network: {{network}}
     source:
       abi: QuestChainV1
@@ -202,7 +197,6 @@ templates:
       file: ./src/mappings/v1/questChain.ts
   - kind: ethereum/contract
     name: QuestChainTokenV1
-    # prettier-ignore
     network: {{network}}
     source:
       abi: QuestChainTokenV1

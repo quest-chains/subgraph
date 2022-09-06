@@ -4,8 +4,11 @@
     "factory": "0xd29c191C281905E450028A97a7609dbD8833451E",
     "blockNumber": "26814787"
   },
-  "v1": {
-    "factory": "0x95FD0851fb383c60d51Ec14C52172A77f759e7F4",
-    "blockNumber": "27859392"
-  }
+  "v1": [
+    {
+      "version": "",
+      "factory": "0x95FD0851fb383c60d51Ec14C52172A77f759e7F4",
+      "blockNumber": "27859392"
+    }
+  ]
 }
