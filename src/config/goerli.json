@@ -1,0 +1,10 @@
+{
+  "network": "goerli",
+  "v1": [
+    {
+      "version": "",
+      "factory": "0xe34D1B1FC3A4179b351199C09905Af6B7b299cCa",
+      "blockNumber": "7638911"
+    }
+  ]
+}

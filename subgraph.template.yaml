@@ -6,13 +6,14 @@ features:
 schema:
   file: ./src/schema.graphql
 dataSources:
+  {{#v0}}
   - kind: ethereum/contract
     name: QuestChainFactoryV0
     network: {{network}}
     source:
-      address: '{{v0.factory}}'
+      address: '{{factory}}'
       abi: QuestChainFactoryV0
-      startBlock: {{v0.blockNumber}}
+      startBlock: {{blockNumber}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -37,6 +38,7 @@ dataSources:
         - event: QuestChainCreated(indexed uint256,address)
           handler: handleQuestChainCreated
       file: ./src/mappings/v0/factory.ts
+  {{/v0}}
   {{#v1}}
   - kind: ethereum/contract
     name: QuestChainFactoryV1{{version}}

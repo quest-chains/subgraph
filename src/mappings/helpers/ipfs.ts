@@ -19,9 +19,11 @@ class Metadata {
 }
 
 export function fetchMetadata(details: string): Metadata {
+  let metadata = new Metadata();
+  if (details == '') return metadata;
+
   let parts = details.split('/');
   let hash = parts.length > 0 ? parts[parts.length - 1] : '';
-  let metadata = new Metadata();
   if (hash != '') {
     let ipfsData = ipfs.cat(hash);
     if (ipfsData) {
