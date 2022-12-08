@@ -75,7 +75,7 @@ dataSources:
         - event: PaymentTokenReplaced(address)
           handler: handlePaymentTokenReplaced
         - event: UpgradeFeeReplaced(uint256)
-          handler: handleFeeReplaced
+          handler: handleUpgradeFeeReplaced
         - event: QuestChainUpgraded(address,address)
           handler: handleQuestChainUpgraded
       file: ./src/mappings/v1/factory.ts
