@@ -7,6 +7,7 @@ class Metadata {
   animationUrl: string | null;
   externalUrl: string | null;
   mimeType: string | null;
+  customUrlName: string | null;
 
   constructor() {
     this.name = null;
@@ -15,6 +16,7 @@ class Metadata {
     this.animationUrl = null;
     this.externalUrl = null;
     this.mimeType = null;
+    this.customUrlName = null;
   }
 }
 
@@ -55,6 +57,10 @@ export function fetchMetadata(details: string): Metadata {
       let mimeType = data.get('mime_type');
       if (mimeType != null && !mimeType.isNull()) {
         metadata.mimeType = mimeType.toString();
+      }
+      let customUrlName = data.get('custom_url_name');
+      if (customUrlName != null && !customUrlName.isNull()) {
+        metadata.customUrlName = customUrlName.toString();
       }
     } else {
       log.warning('could not get IPFS details from hash {}', [hash]);
