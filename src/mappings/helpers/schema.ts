@@ -131,6 +131,8 @@ export function getQuest(address: Address, questIndex: BigInt): Quest {
 
     quest.questChain = address.toHexString();
     quest.questId = questIndex;
+    quest.optional = false;
+    quest.skipReview = false;
     quest.paused = false;
 
     quest.numCompletedQuesters = 0;
