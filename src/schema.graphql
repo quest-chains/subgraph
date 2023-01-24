@@ -21,6 +21,7 @@ type QuestChainToken @entity {
   id: ID!
   questChain: QuestChain!
   tokenId: BigInt!
+  tokenAddress: Bytes!
   details: String!
   name: String
   description: String
