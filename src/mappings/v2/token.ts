@@ -19,8 +19,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
     .concat(event.params.id.toHexString());
   let token = QuestChainToken.load(tokenId);
   if (token == null) {
-    token = new QuestChainToken(tokenId);
-    token.owners = new Array<string>();
+    return;
   }
   if (event.params.from == ADDRESS_ZERO) {
     let user = getUser(event.params.to);
@@ -50,6 +49,7 @@ export function handleURIUpdated(event: URIEvent): void {
   let contract = QuestChainTokenContract.bind(event.address);
   token.questChain = contract.tokenOwner(event.params.id).toHexString();
   token.tokenId = event.params.id;
+  token.tokenAddress = event.address;
 
   let details = event.params.value;
   let metadata = fetchMetadata(details);
