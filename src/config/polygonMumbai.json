@@ -10,5 +10,12 @@
       "factory": "0x95FD0851fb383c60d51Ec14C52172A77f759e7F4",
       "blockNumber": "27859392"
     }
+  ],
+  "v2": [
+    {
+      "version": "",
+      "factory": "0xe71bDB900Ad76DCA56269a7C2EF112C53d6C5BbE",
+      "blockNumber": "31094709"
+    }
   ]
 }

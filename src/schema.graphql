@@ -101,6 +101,8 @@ type QuestEdit @entity {
 
 type Quest @entity {
   id: ID!
+  optional: Boolean!
+  skipReview: Boolean!
   paused: Boolean!
   questChain: QuestChain!
   questId: BigInt!

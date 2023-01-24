@@ -1,7 +1,6 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log, Address, BigInt } from '@graphprotocol/graph-ts';
 import {
   QuestChainEdit,
-  Quest,
   QuestChain,
   QuestEdit,
   QuestStatus,
@@ -10,46 +9,64 @@ import {
 } from '../../types/schema';
 
 import {
-  QuestChainCreated as QuestChainCreatedEvent,
+  QuestChainInit as QuestChainInitEvent,
   QuestChainEdited as QuestChainEditedEvent,
   RoleGranted as RoleGrantedEvent,
   RoleRevoked as RoleRevokedEvent,
   Paused as PausedEvent,
   Unpaused as UnpausedEvent,
-  QuestCreated as QuestCreatedEvent,
-  QuestPaused as QuestPausedEvent,
-  QuestUnpaused as QuestUnpausedEvent,
-  QuestEdited as QuestEditedEvent,
-  QuestProofSubmitted as QuestProofSubmittedEvent,
-  QuestProofReviewed as QuestProofReviewedEvent,
-} from '../../types/templates/QuestChainV0/QuestChainV0';
+  QuestsCreated as QuestsCreatedEvent,
+  QuestsEdited as QuestsEditedEvent,
+  QuestProofsSubmitted as QuestProofsSubmittedEvent,
+  QuestProofsReviewed as QuestProofsReviewedEvent,
+  ConfiguredQuests,
+} from '../../types/templates/QuestChainV2/QuestChainV2';
 import {
+  createQuest,
   createSearchString,
   fetchMetadata,
+  getQuest,
+  getQuestChain,
   getUser,
   questChainCompletedByUser,
   removeFromArray,
 } from '../helpers';
 import { getRoles } from './roles';
 
-export function handleChainCreated(event: QuestChainCreatedEvent): void {
-  let questChain = QuestChain.load(event.address.toHexString());
-  if (questChain != null) {
-    log.info('handleChainCreated {}', [event.address.toHexString()]);
+export function handleChainInit(event: QuestChainInitEvent): void {
+  let questChain = getQuestChain(event.address);
 
-    let details = event.params.details;
-    let metadata = fetchMetadata(details);
-    questChain.details = details;
-    questChain.name = metadata.name;
-    questChain.description = metadata.description;
-    questChain.imageUrl = metadata.imageUrl;
-    questChain.externalUrl = metadata.externalUrl;
+  let details = event.params.details;
+  let metadata = fetchMetadata(details);
+  questChain.details = details;
+  questChain.name = metadata.name;
+  questChain.description = metadata.description;
+  questChain.imageUrl = metadata.imageUrl;
+  questChain.externalUrl = metadata.externalUrl;
+  questChain.slug = metadata.slug;
 
-    let search = createSearchString(metadata.name, metadata.description);
-    questChain.search = search;
+  let search = createSearchString(metadata.name, metadata.description);
+  questChain.search = search;
 
-    questChain.save();
+  questChain.paused = event.params.paused;
+
+  let creator = Address.fromString(questChain.createdBy);
+  for (let i = 0; i < event.params.quests.length; ++i) {
+    let details = event.params.quests[i];
+    let quest = createQuest(
+      event.address,
+      BigInt.fromI32(i),
+      details,
+      creator,
+      event,
+    );
+
+    quest.save();
   }
+
+  questChain.questCount = event.params.quests.length;
+
+  questChain.save();
 }
 
 export function handleChainEdited(event: QuestChainEditedEvent): void {
@@ -72,6 +89,7 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
     questChainEdit.description = questChain.description;
     questChainEdit.imageUrl = questChain.imageUrl;
     questChainEdit.externalUrl = questChain.externalUrl;
+    questChainEdit.slug = questChain.slug;
     questChainEdit.timestamp = event.block.timestamp;
     questChainEdit.txHash = event.transaction.hash;
     questChainEdit.questChain = questChain.id;
@@ -80,12 +98,12 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
 
     let details = event.params.details;
     let metadata = fetchMetadata(details);
-    questChain.paused = false;
     questChain.details = details;
     questChain.name = metadata.name;
     questChain.description = metadata.description;
     questChain.imageUrl = metadata.imageUrl;
     questChain.externalUrl = metadata.externalUrl;
+    questChain.slug = metadata.slug;
     questChain.editedBy = user.id;
     questChain.editedAt = event.block.timestamp;
     questChain.updatedAt = event.block.timestamp;
@@ -175,96 +193,54 @@ export function handleUnpaused(event: UnpausedEvent): void {
   }
 }
 
-export function handleQuestCreated(event: QuestCreatedEvent): void {
+export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = new Quest(questId);
-    quest.questChain = event.address.toHexString();
-    quest.questId = event.params.questId;
-
-    let details = event.params.details;
-    let metadata = fetchMetadata(details);
-    quest.optional = false;
-    quest.skipReview = false;
-    quest.paused = false;
-    quest.details = details;
-    quest.name = metadata.name;
-    quest.description = metadata.description;
-    quest.imageUrl = metadata.imageUrl;
-    quest.externalUrl = metadata.externalUrl;
-    quest.creationTxHash = event.transaction.hash;
-
-    quest.numCompletedQuesters = 0;
-    quest.completedQuesters = new Array<string>();
-    quest.numQuesters = 0;
-    quest.questers = new Array<string>();
-
-    let search = createSearchString(metadata.name, metadata.description);
-    quest.search = search;
-
-    let user = getUser(event.params.creator);
-    quest.createdAt = event.block.timestamp;
-    quest.updatedAt = event.block.timestamp;
-    quest.createdBy = user.id;
-    user.save();
-
-    quest.usersPassed = new Array<string>();
-    quest.usersFailed = new Array<string>();
-    quest.usersInReview = new Array<string>();
-
-    quest.save();
-
     let questCount = questChain.questCount;
-    questChain.questCount = questCount + 1;
+    let creator = Address.fromString(questChain.createdBy);
+    for (let i = 0; i < event.params.detailsList.length; ++i) {
+      let questIndex = BigInt.fromI32(questCount + i);
+      let details = event.params.detailsList[i];
+      let quest = createQuest(
+        event.address,
+        questIndex,
+        details,
+        creator,
+        event,
+      );
+
+      quest.save();
+    }
+
+    questChain.questCount = questCount + event.params.detailsList.length;
 
     questChain.save();
   }
 }
 
-export function handleQuestPaused(event: QuestPausedEvent): void {
+export function handleConfiguredQuests(event: ConfiguredQuests): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = Quest.load(questId);
-    if (quest != null) {
-      quest.paused = true;
+    for (let i = 0; i < event.params.questIdList.length; ++i) {
+      let questIndex = event.params.questIdList[i];
+      let quest = getQuest(event.address, questIndex);
+      quest.optional = event.params.questDetails[i].optional;
+      quest.skipReview = event.params.questDetails[i].skipReview;
+      quest.paused = event.params.questDetails[i].paused;
       quest.save();
     }
   }
 }
 
-export function handleQuestUnpaused(event: QuestUnpausedEvent): void {
+export function handleQuestsEdited(event: QuestsEditedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = Quest.load(questId);
-    if (quest != null) {
-      quest.paused = false;
-      quest.save();
-    }
-  }
-}
+    for (let i = 0; i < event.params.questIdList.length; ++i) {
+      let questIndex = event.params.questIdList[i];
+      let details = event.params.detailsList[i];
+      let quest = getQuest(event.address, questIndex);
 
-export function handleQuestEdited(event: QuestEditedEvent): void {
-  let questChain = QuestChain.load(event.address.toHexString());
-  if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = Quest.load(questId);
-    if (quest != null) {
-      let questEditId = questId
+      let questEditId = quest.id
         .concat('-')
         .concat(event.block.timestamp.toHexString())
         .concat('-')
@@ -284,7 +260,6 @@ export function handleQuestEdited(event: QuestEditedEvent): void {
       questEdit.editor = user.id;
       questEdit.save();
 
-      let details = event.params.details;
       let metadata = fetchMetadata(details);
       quest.details = details;
       quest.name = metadata.name;
@@ -307,20 +282,18 @@ export function handleQuestEdited(event: QuestEditedEvent): void {
   }
 }
 
-export function handleQuestProofSubmitted(
-  event: QuestProofSubmittedEvent,
+export function handleQuestProofsSubmitted(
+  event: QuestProofsSubmittedEvent,
 ): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = Quest.load(questId);
-    if (quest != null) {
-      let user = getUser(event.params.quester);
+    let user = getUser(event.params.quester);
+    for (let i = 0; i < event.params.questIdList.length; ++i) {
+      let questIndex = event.params.questIdList[i];
+      let details = event.params.proofList[i];
+      let quest = getQuest(event.address, questIndex);
 
-      let questStatusId = questId.concat('-').concat(user.id);
+      let questStatusId = quest.id.concat('-').concat(user.id);
       let questStatus = QuestStatus.load(questStatusId);
       if (questStatus == null) {
         questStatus = new QuestStatus(questStatusId);
@@ -376,7 +349,6 @@ export function handleQuestProofSubmitted(
         .concat('-')
         .concat(event.logIndex.toHexString());
       let proof = new ProofSubmission(proofId);
-      let details = event.params.proof;
       let metadata = fetchMetadata(details);
       proof.details = details;
       proof.name = metadata.name;
@@ -405,34 +377,37 @@ export function handleQuestProofSubmitted(
       quest.questers = questers;
       quest.numQuesters = questers.length;
 
-      questers = questChain.questers;
-      questers = removeFromArray(questers, user.id); // to remove duplicates
-      questers.push(user.id);
-      questChain.questers = questers;
-      questChain.numQuesters = questers.length;
-
       proof.save();
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
-      user.save();
       quest.save();
-      questChain.save();
     }
+    user.save();
+    let questers = questChain.questers;
+    questers = removeFromArray(questers, user.id); // to remove duplicates
+    questers.push(user.id);
+    questChain.questers = questers;
+    questChain.numQuesters = questers.length;
+    questChain.save();
   }
 }
 
-export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
+export function handleQuestProofsReviewed(
+  event: QuestProofsReviewedEvent,
+): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questId = event.address
-      .toHexString()
-      .concat('-')
-      .concat(event.params.questId.toHexString());
-    let quest = Quest.load(questId);
-    if (quest != null) {
-      let user = getUser(event.params.quester);
+    let reviewer = getUser(event.params.reviewer);
+    for (let i = 0; i < event.params.questIdList.length; ++i) {
+      let questIndex = event.params.questIdList[i];
+      let quest = getQuest(event.address, questIndex);
 
-      let questStatusId = questId.concat('-').concat(user.id);
+      let quester = event.params.questerList[i];
+      let success = event.params.successList[i];
+      let details = event.params.detailsList[i];
+      let user = getUser(quester);
+
+      let questStatusId = quest.id.concat('-').concat(user.id);
       let questStatus = QuestStatus.load(questStatusId);
       if (questStatus == null) {
         questStatus = new QuestStatus(questStatusId);
@@ -453,7 +428,7 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
       newArray = removeFromArray(questsInReview, questStatusId);
       questChain.questsInReview = newArray;
 
-      if (event.params.success) {
+      if (success) {
         questStatus.status = 'pass';
 
         let questsPassed = questChain.questsPassed;
@@ -491,7 +466,6 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
         .concat('-')
         .concat(event.logIndex.toHexString());
       let review = new ReviewSubmission(reviewId);
-      let details = event.params.details;
       let metadata = fetchMetadata(details);
       review.details = details;
       review.name = metadata.name;
@@ -503,7 +477,7 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
       review.questChain = questChain.id;
       review.questStatus = questStatus.id;
 
-      review.accepted = event.params.success;
+      review.accepted = success;
 
       let submissions = questStatus.submissions;
       if (submissions.length > 0) {
@@ -514,24 +488,18 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
       review.timestamp = event.block.timestamp;
       review.txHash = event.transaction.hash;
       review.user = user.id;
-      let reviewer = getUser(event.params.reviewer);
       review.reviewer = reviewer.id;
 
       let search = createSearchString(metadata.name, metadata.description);
       review.search = search;
 
       review.save();
-      reviewer.save();
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
 
       if (
-        event.params.success &&
-        questChainCompletedByUser(
-          event.address,
-          questChain.questCount,
-          event.params.quester,
-        )
+        success &&
+        questChainCompletedByUser(event.address, questChain.questCount, quester)
       ) {
         let completedQuesters = quest.completedQuesters;
         completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
@@ -548,7 +516,8 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
 
       user.save();
       quest.save();
-      questChain.save();
     }
+    reviewer.save();
+    questChain.save();
   }
 }
