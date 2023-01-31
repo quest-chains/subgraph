@@ -6,5 +6,12 @@
       "factory": "0xe34D1B1FC3A4179b351199C09905Af6B7b299cCa",
       "blockNumber": "7638911"
     }
+  ],
+  "v2": [
+    {
+      "version": "",
+      "factory": "0x16621DBed6e845B958a37F36fA5BfE133de1408F",
+      "blockNumber": "8408376"
+    }
   ]
 }

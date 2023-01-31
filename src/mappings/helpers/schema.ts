@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts';
-import { ERC20 } from '../../types/QuestChainFactoryV1/ERC20';
+import { ERC20 } from '../../types/QuestChainFactoryV2/ERC20';
 import {
   User,
   Global,

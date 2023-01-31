@@ -9,11 +9,11 @@ export function getNetwork(): string {
   else if (network == 'goerli') return '0x5';
   else if (network == 'poa-core') return '0x63';
   else if (network == 'poa-sokol') return '0x4d';
-  else if (network == 'xdai') return '0x64';
+  else if (network == 'gnosis') return '0x64';
   else if (network == 'matic') return '0x89';
   else if (network == 'mumbai') return '0x13881';
   else if (network == 'arbitrum-one') return '0xa4b1';
-  else if (network == 'arbitrum-rinkeby') return '0x66eeb';
+  else if (network == 'arbitrum-goerli') return '0x66eed';
   else if (network == 'optimism') return '0xa';
   else if (network == 'optimism-kovan') return '0x45';
   else if (network == 'aurora') return '0x4e454152';

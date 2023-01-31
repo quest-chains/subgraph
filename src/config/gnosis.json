@@ -1,5 +1,5 @@
 {
-  "network": "xdai",
+  "network": "gnosis",
   "v0": {
     "factory": "0x136F35AA2F5C8fceF987689b85e13842357DF1ab",
     "blockNumber": "22741851"
@@ -9,6 +9,13 @@
       "version": "",
       "factory": "0xc78057b02DAd38900E0E6f43DcE6413aEcb558d0",
       "blockNumber": "23975203"
+    }
+  ],
+  "v2": [
+    {
+      "version": "",
+      "factory": "0x7B7A3bD8aD2B09dD016732bCed8CDd56B176F5E2",
+      "blockNumber": "26238518"
     }
   ]
 }

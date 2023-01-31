@@ -1,0 +1,10 @@
+{
+  "network": "arbitrum-goerli",
+  "v2": [
+    {
+      "version": "",
+      "factory": "0x7CeCF0a7B6e764d7B8849bD47E1A92c1806B89aC",
+      "blockNumber": "6336532"
+    }
+  ]
+}
