@@ -37,6 +37,9 @@
     "prepare-arbitrum-goerli": "mustache src/config/arbitrumGoerli.json subgraph.template.yaml > subgraph.yaml",
     "deploy-only-arbitrum-goerli": "graph deploy --product hosted-service quest-chains/quest-chains-arbitrum-goerli",
     "deploy-arbitrum-goerli": "yarn prepare-arbitrum-goerli && yarn codegen && yarn build && yarn deploy-only-arbitrum-goerli",
+    "prepare-optimism": "mustache src/config/optimism.json subgraph.template.yaml > subgraph.yaml",
+    "deploy-only-optimism": "graph deploy --product hosted-service quest-chains/quest-chains-optimism",
+    "deploy-optimism": "yarn prepare-optimism && yarn codegen && yarn build && yarn deploy-only-optimism",
     "prepare": "husky install"
   },
   "lint-staged": {
