@@ -19,7 +19,7 @@ import {
   QuestsEdited as QuestsEditedEvent,
   QuestProofsSubmitted as QuestProofsSubmittedEvent,
   QuestProofsReviewed as QuestProofsReviewedEvent,
-  ConfiguredQuests,
+  ConfiguredQuests as ConfiguredQuestsEvent,
 } from '../../types/templates/QuestChainV2/QuestChainV2';
 import {
   createQuest,
@@ -218,7 +218,7 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   }
 }
 
-export function handleConfiguredQuests(event: ConfiguredQuests): void {
+export function handleConfiguredQuests(event: ConfiguredQuestsEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
     for (let i = 0; i < event.params.questIdList.length; ++i) {
@@ -327,19 +327,23 @@ export function handleQuestProofsSubmitted(
         questChain.questsInReview = newArray;
       }
 
-      let usersInReview = quest.usersInReview;
-      usersInReview.push(questStatus.id);
-      quest.usersInReview = usersInReview;
+      if (quest.skipReview) {
+        questStatus.status = 'pass';
+      } else {
+        let usersInReview = quest.usersInReview;
+        usersInReview.push(questStatus.id);
+        quest.usersInReview = usersInReview;
 
-      let questsInReview = user.questsInReview;
-      questsInReview.push(questStatus.id);
-      user.questsInReview = questsInReview;
+        let questsInReview = user.questsInReview;
+        questsInReview.push(questStatus.id);
+        user.questsInReview = questsInReview;
 
-      questsInReview = questChain.questsInReview;
-      questsInReview.push(questStatus.id);
-      questChain.questsInReview = questsInReview;
+        questsInReview = questChain.questsInReview;
+        questsInReview.push(questStatus.id);
+        questChain.questsInReview = questsInReview;
 
-      questStatus.status = 'review';
+        questStatus.status = 'review';
+      }
 
       let proofId = questStatus.id
         .concat('-')

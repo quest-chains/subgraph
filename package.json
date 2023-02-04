@@ -40,6 +40,7 @@
     "prepare-optimism": "mustache src/config/optimism.json subgraph.template.yaml > subgraph.yaml",
     "deploy-only-optimism": "graph deploy --product hosted-service quest-chains/quest-chains-optimism",
     "deploy-optimism": "yarn prepare-optimism && yarn codegen && yarn build && yarn deploy-only-optimism",
+    "deploy-all": "yarn deploy-mumbai && yarn deploy-goerli && yarn deploy-gnosis && yarn deploy-polygon && yarn deploy-arbitrum && yarn deploy-arbitrum-goerli && yarn deploy-optimism",
     "prepare": "husky install"
   },
   "lint-staged": {
