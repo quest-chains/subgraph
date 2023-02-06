@@ -328,6 +328,18 @@ export function handleQuestProofsSubmitted(
       }
 
       if (quest.skipReview) {
+        let questsPassed = questChain.questsPassed;
+        questsPassed.push(questStatusId);
+        questChain.questsPassed = questsPassed;
+
+        questsPassed = user.questsPassed;
+        questsPassed.push(questStatusId);
+        user.questsPassed = questsPassed;
+
+        let usersPassed = quest.usersPassed;
+        usersPassed.push(questStatusId);
+        quest.usersPassed = usersPassed;
+
         questStatus.status = 'pass';
       } else {
         let usersInReview = quest.usersInReview;
