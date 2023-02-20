@@ -44,6 +44,7 @@ type QuestChainEdit @entity {
   imageUrl: String
   externalUrl: String
   slug: String
+  categories: [String!]
 }
 
 type QuestChain @entity {
@@ -73,6 +74,7 @@ type QuestChain @entity {
   imageUrl: String
   externalUrl: String
   slug: String
+  categories: [String!]
   questsPassed: [QuestStatus!]!
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!

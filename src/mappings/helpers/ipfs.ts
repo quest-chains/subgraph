@@ -8,6 +8,7 @@ class Metadata {
   externalUrl: string | null;
   mimeType: string | null;
   slug: string | null;
+  categories: string[] | null;
 
   constructor() {
     this.name = null;
@@ -61,6 +62,15 @@ export function fetchMetadata(details: string): Metadata {
       let slug = data.get('slug');
       if (slug != null && !slug.isNull()) {
         metadata.slug = slug.toString();
+      }
+      let categories = data.get('categories');
+      if (categories != null && !categories.isNull()) {
+        let categoryList = new Array<string>();
+        let categoryArray = categories.toArray();
+        for (let i = 0; i < categoryArray.length; ++i) {
+          categoryList.push(categoryArray.at(i).toString());
+        }
+        metadata.categories = categoryList;
       }
     } else {
       log.warning('could not get IPFS details from hash {}', [hash]);

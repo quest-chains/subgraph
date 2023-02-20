@@ -44,6 +44,8 @@ export function handleChainCreated(event: QuestChainCreatedEvent): void {
     questChain.description = metadata.description;
     questChain.imageUrl = metadata.imageUrl;
     questChain.externalUrl = metadata.externalUrl;
+    questChain.slug = metadata.slug;
+    questChain.categories = metadata.categories;
 
     let search = createSearchString(metadata.name, metadata.description);
     questChain.search = search;
@@ -72,6 +74,8 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
     questChainEdit.description = questChain.description;
     questChainEdit.imageUrl = questChain.imageUrl;
     questChainEdit.externalUrl = questChain.externalUrl;
+    questChainEdit.slug = questChain.slug;
+    questChainEdit.categories = questChain.categories;
     questChainEdit.timestamp = event.block.timestamp;
     questChainEdit.txHash = event.transaction.hash;
     questChainEdit.questChain = questChain.id;
@@ -86,6 +90,8 @@ export function handleChainEdited(event: QuestChainEditedEvent): void {
     questChain.description = metadata.description;
     questChain.imageUrl = metadata.imageUrl;
     questChain.externalUrl = metadata.externalUrl;
+    questChain.slug = metadata.slug;
+    questChain.categories = metadata.categories;
     questChain.editedBy = user.id;
     questChain.editedAt = event.block.timestamp;
     questChain.updatedAt = event.block.timestamp;
