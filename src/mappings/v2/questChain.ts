@@ -201,6 +201,7 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   if (questChain != null) {
     let questCount = questChain.questCount;
     let creator = Address.fromString(questChain.createdBy);
+
     for (let i = 0; i < event.params.detailsList.length; ++i) {
       let questIndex = BigInt.fromI32(questCount + i);
       let details = event.params.detailsList[i];
@@ -224,14 +225,26 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
 export function handleConfiguredQuests(event: ConfiguredQuestsEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
+    let questCount = questChain.questCount;
+
     for (let i = 0; i < event.params.questIdList.length; ++i) {
       let questIndex = event.params.questIdList[i];
       let quest = getQuest(event.address, questIndex);
       quest.optional = event.params.questDetails[i].optional;
       quest.skipReview = event.params.questDetails[i].skipReview;
+
+      if (event.params.questDetails[i].paused && !quest.paused) {
+        questCount = questCount - 1;
+      } else if (!event.params.questDetails[i].paused && quest.paused) {
+        questCount = questCount + 1;
+      }
+
       quest.paused = event.params.questDetails[i].paused;
       quest.save();
     }
+
+    questChain.questCount = questCount;
+    questChain.save();
   }
 }
 

@@ -243,6 +243,11 @@ export function handleQuestPaused(event: QuestPausedEvent): void {
       quest.paused = true;
       quest.save();
     }
+
+    let questCount = questChain.questCount;
+    questChain.questCount = questCount - 1;
+
+    questChain.save();
   }
 }
 
@@ -258,6 +263,11 @@ export function handleQuestUnpaused(event: QuestUnpausedEvent): void {
       quest.paused = false;
       quest.save();
     }
+
+    let questCount = questChain.questCount;
+    questChain.questCount = questCount + 1;
+
+    questChain.save();
   }
 }
 
