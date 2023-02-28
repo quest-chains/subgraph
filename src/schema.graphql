@@ -78,7 +78,8 @@ type QuestChain @entity {
   questsPassed: [QuestStatus!]!
   questsFailed: [QuestStatus!]!
   questsInReview: [QuestStatus!]!
-  questCount: Int!
+  questCount: Int! # includes number of quests which are not paused
+  totalQuestCount: Int! # includes all quests
   quests: [Quest!]! @derivedFrom(field: "questChain")
   edits: [QuestChainEdit!]! @derivedFrom(field: "questChain")
   status: [QuestStatus!]! @derivedFrom(field: "questChain")
@@ -149,7 +150,7 @@ type User @entity {
   submittedReviews: [ReviewSubmission!]! @derivedFrom(field: "reviewer")
   tokens: [QuestChainToken!]! @derivedFrom(field: "owners")
   completedQuests: [Quest!]! @derivedFrom(field: "completedQuesters")
-  completedQuestChains: [Quest!]! @derivedFrom(field: "completedQuesters")
+  completedQuestChains: [QuestChain!]! @derivedFrom(field: "completedQuesters")
 }
 
 enum Status {

@@ -6,6 +6,10 @@ export function questChainCompletedByUser(
   questCount: i32,
   userAddress: Address,
 ): boolean {
+  if (questCount == 0) return false;
+
+  let atLeastOnePassed = false;
+
   for (let questIdx: i32 = 0; questIdx < questCount; questIdx = questIdx + 1) {
     let questId = chainAddress
       .toHexString()
@@ -14,12 +18,15 @@ export function questChainCompletedByUser(
     let questStatusId = questId.concat('-').concat(userAddress.toHexString());
     let quest = Quest.load(questId);
     if (quest == null) return false;
-    if (!quest.paused) {
-      let questStatus = QuestStatus.load(questStatusId);
-      if (questStatus == null) return false;
-      if (questStatus.status != 'pass') return false;
-    }
+    let questStatus = QuestStatus.load(questStatusId);
+    if (questStatus == null) return false;
+
+    if (!(quest.optional || quest.paused || questStatus.status == 'pass'))
+      return false;
+
+    if (!atLeastOnePassed && questStatus.status == 'pass')
+      atLeastOnePassed = true;
   }
-  if (questCount == 0) return false;
-  return true;
+
+  return atLeastOnePassed;
 }

@@ -77,6 +77,7 @@ export function getQuestChain(address: Address): QuestChain {
     questChain.questers = new Array<string>();
 
     questChain.questCount = 0;
+    questChain.totalQuestCount = 0;
     questChain.paused = false;
 
     questChain.owners = new Array<string>();

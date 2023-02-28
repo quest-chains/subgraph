@@ -227,6 +227,9 @@ export function handleQuestCreated(event: QuestCreatedEvent): void {
     let questCount = questChain.questCount;
     questChain.questCount = questCount + 1;
 
+    let totalQuestCount = questChain.totalQuestCount;
+    questChain.totalQuestCount = totalQuestCount + 1;
+
     questChain.save();
   }
 }
@@ -545,7 +548,7 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
         event.params.success &&
         questChainCompletedByUser(
           event.address,
-          questChain.questCount,
+          questChain.totalQuestCount,
           event.params.quester,
         )
       ) {

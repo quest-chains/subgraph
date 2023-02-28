@@ -66,6 +66,7 @@ export function handleChainInit(event: QuestChainInitEvent): void {
   }
 
   questChain.questCount = event.params.quests.length;
+  questChain.totalQuestCount = event.params.quests.length;
 
   questChain.save();
 }
@@ -199,11 +200,11 @@ export function handleUnpaused(event: UnpausedEvent): void {
 export function handleQuestsCreated(event: QuestsCreatedEvent): void {
   let questChain = QuestChain.load(event.address.toHexString());
   if (questChain != null) {
-    let questCount = questChain.questCount;
+    let totalQuestCount = questChain.totalQuestCount;
     let creator = Address.fromString(questChain.createdBy);
 
     for (let i = 0; i < event.params.detailsList.length; ++i) {
-      let questIndex = BigInt.fromI32(questCount + i);
+      let questIndex = BigInt.fromI32(totalQuestCount + i);
       let details = event.params.detailsList[i];
       let quest = createQuest(
         event.address,
@@ -216,7 +217,11 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
       quest.save();
     }
 
+    let questCount = questChain.questCount;
     questChain.questCount = questCount + event.params.detailsList.length;
+
+    questChain.totalQuestCount =
+      totalQuestCount + event.params.detailsList.length;
 
     questChain.save();
   }
@@ -412,6 +417,28 @@ export function handleQuestProofsSubmitted(
       proof.save();
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
+
+      if (
+        questStatus.status == 'pass' &&
+        questChainCompletedByUser(
+          event.address,
+          questChain.totalQuestCount,
+          event.params.quester,
+        )
+      ) {
+        let completedQuesters = quest.completedQuesters;
+        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
+        completedQuesters.push(user.id);
+        quest.completedQuesters = completedQuesters;
+        quest.numCompletedQuesters = completedQuesters.length;
+
+        completedQuesters = questChain.completedQuesters;
+        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
+        completedQuesters.push(user.id);
+        questChain.completedQuesters = completedQuesters;
+        questChain.numCompletedQuesters = completedQuesters.length;
+      }
+
       quest.save();
     }
     user.save();
@@ -531,7 +558,11 @@ export function handleQuestProofsReviewed(
 
       if (
         success &&
-        questChainCompletedByUser(event.address, questChain.questCount, quester)
+        questChainCompletedByUser(
+          event.address,
+          questChain.totalQuestCount,
+          quester,
+        )
       ) {
         let completedQuesters = quest.completedQuesters;
         completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
