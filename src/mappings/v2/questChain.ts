@@ -28,8 +28,8 @@ import {
   getQuest,
   getQuestChain,
   getUser,
-  questChainCompletedByUser,
   removeFromArray,
+  updateQuestChainCompletions,
 } from '../helpers';
 import { getRoles } from './roles';
 
@@ -223,6 +223,7 @@ export function handleQuestsCreated(event: QuestsCreatedEvent): void {
     questChain.totalQuestCount =
       totalQuestCount + event.params.detailsList.length;
 
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -249,6 +250,7 @@ export function handleConfiguredQuests(event: ConfiguredQuestsEvent): void {
     }
 
     questChain.questCount = questCount;
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -418,25 +420,12 @@ export function handleQuestProofsSubmitted(
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
 
-      if (
-        questStatus.status == 'pass' &&
-        questChainCompletedByUser(
-          event.address,
-          questChain.totalQuestCount,
-          event.params.quester,
-        )
-      ) {
+      if (questStatus.status == 'pass') {
         let completedQuesters = quest.completedQuesters;
         completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
         completedQuesters.push(user.id);
         quest.completedQuesters = completedQuesters;
         quest.numCompletedQuesters = completedQuesters.length;
-
-        completedQuesters = questChain.completedQuesters;
-        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
-        completedQuesters.push(user.id);
-        questChain.completedQuesters = completedQuesters;
-        questChain.numCompletedQuesters = completedQuesters.length;
       }
 
       quest.save();
@@ -447,6 +436,8 @@ export function handleQuestProofsSubmitted(
     questers.push(user.id);
     questChain.questers = questers;
     questChain.numQuesters = questers.length;
+
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -556,31 +547,19 @@ export function handleQuestProofsReviewed(
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
 
-      if (
-        success &&
-        questChainCompletedByUser(
-          event.address,
-          questChain.totalQuestCount,
-          quester,
-        )
-      ) {
+      if (success) {
         let completedQuesters = quest.completedQuesters;
         completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
         completedQuesters.push(user.id);
         quest.completedQuesters = completedQuesters;
         quest.numCompletedQuesters = completedQuesters.length;
-
-        completedQuesters = questChain.completedQuesters;
-        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
-        completedQuesters.push(user.id);
-        questChain.completedQuesters = completedQuesters;
-        questChain.numCompletedQuesters = completedQuesters.length;
       }
 
       user.save();
       quest.save();
     }
     reviewer.save();
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }

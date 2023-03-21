@@ -27,8 +27,8 @@ import {
   createSearchString,
   fetchMetadata,
   getUser,
-  questChainCompletedByUser,
   removeFromArray,
+  updateQuestChainCompletions,
 } from '../helpers';
 import { getRoles } from './roles';
 
@@ -230,6 +230,7 @@ export function handleQuestCreated(event: QuestCreatedEvent): void {
     let totalQuestCount = questChain.totalQuestCount;
     questChain.totalQuestCount = totalQuestCount + 1;
 
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -250,6 +251,7 @@ export function handleQuestPaused(event: QuestPausedEvent): void {
     let questCount = questChain.questCount;
     questChain.questCount = questCount - 1;
 
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -270,6 +272,7 @@ export function handleQuestUnpaused(event: QuestUnpausedEvent): void {
     let questCount = questChain.questCount;
     questChain.questCount = questCount + 1;
 
+    questChain = updateQuestChainCompletions(questChain);
     questChain.save();
   }
 }
@@ -544,29 +547,18 @@ export function handleQuestProofReviewed(event: QuestProofReviewedEvent): void {
       questStatus.updatedAt = event.block.timestamp;
       questStatus.save();
 
-      if (
-        event.params.success &&
-        questChainCompletedByUser(
-          event.address,
-          questChain.totalQuestCount,
-          event.params.quester,
-        )
-      ) {
+      if (event.params.success) {
         let completedQuesters = quest.completedQuesters;
         completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
         completedQuesters.push(user.id);
         quest.completedQuesters = completedQuesters;
         quest.numCompletedQuesters = completedQuesters.length;
-
-        completedQuesters = questChain.completedQuesters;
-        completedQuesters = removeFromArray(completedQuesters, user.id); // to remove duplicates
-        completedQuesters.push(user.id);
-        questChain.completedQuesters = completedQuesters;
-        questChain.numCompletedQuesters = completedQuesters.length;
       }
 
       user.save();
       quest.save();
+
+      questChain = updateQuestChainCompletions(questChain);
       questChain.save();
     }
   }

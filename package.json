@@ -11,7 +11,7 @@
     "prettier": "^2.7.1"
   },
   "scripts": {
-    "auth": "graph auth --product hosted-service $GRAPH_ACCESS_TOKEN",
+    "auth": "graph auth",
     "build": "graph build",
     "clean": "rm -rf src/types build",
     "codegen": "yarn clean && graph codegen --output-dir src/types/",

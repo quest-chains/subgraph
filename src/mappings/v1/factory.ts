@@ -82,6 +82,7 @@ export function handleQuestChainCreated(event: QuestChainCreatedEvent): void {
   globalNode.save();
 
   user.save();
+
   questChain.save();
 }
 
